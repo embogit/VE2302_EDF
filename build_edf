@@ -1,12 +1,13 @@
 #!/bin/bash
-ROOTDIR=$PWD
-
-#For generate machine conf
-SDT_LOCATION=/storage/avnet/petalinux-ve2302-oob/vivado-hw/sdt
-
 #Set if you have cache
 SSTATE_CACHE=/storage/sstate-cache
 SOURCE_MIRROR=/storage/downloads
+
+
+ROOTDIR=$PWD
+
+#For generate machine conf
+SDT_LOCATION=vivado-hw/sdt
 
 
 repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2025.2 -m default-edf.xml
@@ -30,6 +31,18 @@ repo sync
 source edf-init-build-env
 
 cd $ROOTDIR
+
+#Build HW
+cd vivado-hw
+make -f Makefile
+cd ..
+
+#Check that we have SDT
+if [ ! -d $SDT_LOCATION ]; then
+  echo "Vivado SDT articats do not exist, possibly failed build"
+  exit 1
+fi
+
 
 sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302
 
