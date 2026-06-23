@@ -13,8 +13,10 @@ LOPPER=$(which lopper)
 #Lopper is currently dependent on Vitis version (2026.1 EDF relies on newer lopper)
 if [[ $LOPPER == *"2025.2"* ]]; then
     repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2025.2 -m default-edf.xml
+    HW_PROJECT=ve2302_oob_2025_2
 elif [[ $LOPPER == *"2026.1"* ]]; then
     repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2026.1 -m default-edf.xml
+    HW_PROJECT=ve2302_oob_2026_1
 else
     echo "Local lopper installation not supported, cannot figure out required EDF version"
     exit 1
@@ -43,7 +45,7 @@ cd $ROOTDIR
 
 #Build HW
 cd vivado-hw
-make -f Makefile
+make -f Makefile DESIGN_NAME=$HW_PROJECT
 cd ..
 
 #Check that we have SDT
