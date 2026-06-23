@@ -1,18 +1,69 @@
 #!/bin/bash
-#Set if you have cache
+####################################################################
+#User settings
+####################################################################
+#Set if you have sstate cache
 SSTATE_CACHE=/storage/sstate-cache
 SOURCE_MIRROR=/storage/downloads
+####################################################################
+
+#Parse commandline
+POSITIONAL_ARGS=()
+INSECURE_MODE=0
+__usage="
+Usage: $(basename $0) [OPTIONS]
+
+Options:
+  -insecure              Insecure download mode not checking certificates
+  -h, --help             Help text
+"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+	-insecure)
+	    INSECURE_MODE=1
+	    shift
+	    ;;
+	-h|--help)
+	    echo "$__usage"
+	    shift
+	    exit 0
+	    ;;
+	-*|--*)
+	    echo "Unknown option $1"
+	    exit 1
+	    ;;
+	*)
+	    POSITIONAL_ARGS+=("$1")
+	    shift
+	    ;;
+    esac
+done
 
 
 ROOTDIR=$PWD
 
 #For generate machine conf
 SDT_LOCATION=vivado-hw/sdt
+LOPPER=$(which lopper)
+
+#Lopper is currently dependent on Vitis version (2026.1 EDF relies on newer lopper)
+if [[ $LOPPER == *"2025.2"* ]]; then
+    repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2025.2 -m default-edf.xml
+    HW_PROJECT=ve2302_oob_2025_2
+elif [[ $LOPPER == *"2026.1"* ]]; then
+    repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2026.1 -m default-edf.xml
+    HW_PROJECT=ve2302_oob_2026_1
+else
+    echo "Local lopper installation not supported, cannot figure out required EDF version"
+    exit 1
+fi
 
 
-repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2025.2 -m default-edf.xml
+if [[ $INSECURE_MODE == 1 ]]; then 
+    echo "Insecure mode, removing certificate checking"
 
-#Patch for Cisco Umbrella
+    #Patch to remove SSL certificate checking
 patch -p1 --ignore-whitespace << 'EOF'
 --- a/.repo/repo/project.py
 +++ b/.repo/repo/project.py
@@ -26,6 +77,8 @@ patch -p1 --ignore-whitespace << 'EOF'
              cmd += ["--silent", "--show-error"]
 EOF
 
+fi
+
 repo sync
 
 source edf-init-build-env
@@ -34,7 +87,7 @@ cd $ROOTDIR
 
 #Build HW
 cd vivado-hw
-make -f Makefile
+make -f Makefile DESIGN_NAME=$HW_PROJECT
 cd ..
 
 #Check that we have SDT
