@@ -1,7 +1,44 @@
 #!/bin/bash
-#Set if you have cache
+####################################################################
+#User settings
+####################################################################
+#Set if you have sstate cache
 SSTATE_CACHE=/storage/sstate-cache
 SOURCE_MIRROR=/storage/downloads
+####################################################################
+
+#Parse commandline
+POSITIONAL_ARGS=()
+INSECURE_MODE=0
+__usage="
+Usage: $(basename $0) [OPTIONS]
+
+Options:
+  -insecure              Insecure download mode not checking certificates
+  -h, --help             Help text
+"
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+	-insecure)
+	    INSECURE_MODE=1
+	    shift
+	    ;;
+	-h|--help)
+	    echo "$__usage"
+	    shift
+	    exit 0
+	    ;;
+	-*|--*)
+	    echo "Unknown option $1"
+	    exit 1
+	    ;;
+	*)
+	    POSITIONAL_ARGS+=("$1")
+	    shift
+	    ;;
+    esac
+done
 
 
 ROOTDIR=$PWD
@@ -23,7 +60,10 @@ else
 fi
 
 
-#Patch for Cisco Umbrella
+if [[ $INSECURE_MODE == 1 ]]; then 
+    echo "Insecure mode, removing certificate checking"
+
+    #Patch to remove SSL certificate checking
 patch -p1 --ignore-whitespace << 'EOF'
 --- a/.repo/repo/project.py
 +++ b/.repo/repo/project.py
@@ -36,6 +76,8 @@ patch -p1 --ignore-whitespace << 'EOF'
          if quiet:
              cmd += ["--silent", "--show-error"]
 EOF
+
+fi
 
 repo sync
 
