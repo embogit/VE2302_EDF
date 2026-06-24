@@ -61,7 +61,8 @@ fi
 
 
 if [[ $INSECURE_MODE == 1 ]]; then 
-    echo "Insecure mode, removing certificate checking"
+    echo "Insecure mode, no certificate checking"
+    if ! grep -q insecure ".repo/repo/project.py"; then
 
     #Patch to remove SSL certificate checking
 patch -p1 --ignore-whitespace << 'EOF'
@@ -77,6 +78,7 @@ patch -p1 --ignore-whitespace << 'EOF'
              cmd += ["--silent", "--show-error"]
 EOF
 
+fi
 fi
 
 repo sync
