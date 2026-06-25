@@ -1,5 +1,4 @@
-//Due to bug in Petalinux SDT preprocessor includes cannot be used
-//#include "include/dt-bindings/gpio/gpio.h"
+#include "recipe-sysroot/usr/share/sdt/versal-generic-xcve2302/include/dt-bindings/gpio/gpio.h"
 
 / {
 	model = "VE2302 board";
@@ -66,9 +65,7 @@
 		spi-rx-bus-width = <8>;
 		spi-max-frequency = <20000000>;
 		no-wp;
-//Petalinux SDT bug workaround
-//		reset-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
-		reset-gpios = <&gpio1 12 1>;
+		reset-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
 		partition@0 {
 			label = "spi0-boot";
 			reg = <0x00000000 0x01000000>;
