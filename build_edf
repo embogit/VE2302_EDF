@@ -10,11 +10,13 @@ SOURCE_MIRROR=/storage/downloads
 #Parse commandline
 POSITIONAL_ARGS=()
 INSECURE_MODE=0
+PLATFORM=0
 __usage="
 Usage: $(basename $0) [OPTIONS]
 
 Options:
   -insecure              Insecure download mode not checking certificates
+  -platform              Build full platform imagage and SDK
   -h, --help             Help text
 "
 
@@ -22,6 +24,10 @@ while [[ $# -gt 0 ]]; do
     case $1 in
 	-insecure)
 	    INSECURE_MODE=1
+	    shift
+	    ;;
+	-platform)
+	    PLATFORM=1
 	    shift
 	    ;;
 	-h|--help)
@@ -53,7 +59,12 @@ if [[ $LOPPER == *"2025.2"* ]]; then
     HW_PROJECT=ve2302_oob_2025_2
 elif [[ $LOPPER == *"2026.1"* ]]; then
     repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v2026.1 -m default-edf.xml
-    HW_PROJECT=ve2302_oob_2026_1
+    if [[ $PLATFORM == 0 ]]; then
+	HW_PROJECT=ve2302_oob_2026_1
+    else
+	HW_PROJECT=ve2302_platform_2026_1
+    fi
+    
 else
     echo "Local lopper installation not supported, cannot figure out required EDF version"
     exit 1
@@ -116,12 +127,22 @@ fi
 #Enable usage of generic EDF linux image for Versal by specifying it from commandline
 sed -i '/MACHINE = \"versal-generic-xcve2302\"/d' conf/local.conf
 
+#Create boot parts of image
 MACHINE=versal-generic-xcve2302 bitbake xilinx-bootbin
-MACHINE=amd-cortexa72-common bitbake edf-linux-disk-image
 
-wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic:1
+#Create Linux userspace
+if [[ $PLATFORM == 0 ]]; then
+    MACHINE=amd-cortexa72-common bitbake edf-linux-disk-image
+    wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic:1
+    echo "WIC image ready, copy it to sd-card with command:"
+    echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
+else
+    MACHINE=amd-cortexa72-common bitbake edf-platform-disk-image
+    MACHINE=amd-cortexa72-common bitbake meta-edf-app-sdk
+    wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic:1
+    echo "WIC image ready, copy it to sd-card with command:"
+    echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
+fi
 
-echo "WIC image ready, copy it to sd-card with command:"
-echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
 
 exit 0
