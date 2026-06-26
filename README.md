@@ -23,4 +23,4 @@ build_edf -platform -sstate /storage/sstate
 
 ## Cloning
 
-** Remember to use git clone --recursive to get HW submodule cloned. **
+**Remember to use git clone --recursive to get HW submodule cloned.**
