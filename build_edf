@@ -73,14 +73,14 @@ main ()
 	cd vivado-hw
 	make -f Makefile DESIGN_NAME=$HW_PROJECT
 	cd ..
+
+	#Check that we have SDT i.e. build did not fail
+	if [ ! -d $SDT_LOCATION ]; then
+	    echo "Vivado SDT articats do not exist, possibly failed build"
+	    exit 1
+	fi
     else
 	echo "Vivado build exists, if you want to rebuild use -clean_hw option first"
-    fi
-
-    #Check that we have SDT i.e. build did not fail
-    if [ ! -d $SDT_LOCATION ]; then
-	echo "Vivado SDT articats do not exist, possibly failed build"
-	exit 1
     fi
 
 
@@ -101,7 +101,7 @@ main ()
     #Enable usage of generic EDF linux image for Versal by specifying it from commandline
     sed -i '/MACHINE = \"versal-generic-xcve2302\"/d' conf/local.conf
 
-    #Create boot parts of image
+    #Create boot parts of image (single stage boot)
     MACHINE=versal-generic-xcve2302 bitbake xilinx-bootbin
 
     #Create Linux userspace
