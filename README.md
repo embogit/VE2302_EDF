@@ -9,6 +9,7 @@ The script will automatically detect Vivado version and use matching EDF version
 Usage: build_edf [OPTIONS]  
   
 Options:  
+~~~
   -insecure              Insecure download mode not checking certificates  
   -platform              Build full platform imagage and SDK  
   -sstate <value>        Override SSTATE_CACHE location  
@@ -17,10 +18,13 @@ Options:
   -clean_hw              Cleans HW build  
   -clean_sw              Cleans SW build  
   -h, --help             Help text  
+~~~
   
 Example:  
+~~~
 build_edf -platform -sstate /storage/sstate  
+~~~
 
 ## Cloning
 
-**Remember to use git clone --recursive to get HW submodule cloned.**
+Remember to use **git clone --recursive** to get HW submodule cloned.
