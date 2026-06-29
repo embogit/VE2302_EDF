@@ -230,7 +230,27 @@ clean_sw ()
 {
     echo "Cleaning SW build"
     rm -rf build output
-    #rm -rf source/meta-xx
+
+    echo "Cleaning cloned repo"
+    rm -rf .repo
+    rm -rf sources/meta-amd-adaptive-socs
+    rm -rf sources/meta-jupyter
+    rm -rf sources/meta-openembedded
+    rm -rf sources/meta-xilinx-tsn
+    rm -rf sources/meta-amd-edf
+    rm -rf sources/meta-kria
+    rm -rf sources/meta-qt5
+    rm -rf sources/meta-virtualization
+    rm -rf sources/meta-zephyr
+    rm -rf sources/meta-arm
+    rm -rf sources/meta-mingw
+    rm -rf sources/meta-ros
+    rm -rf sources/meta-vitis
+    rm -rf sources/poky
+    rm -rf sources/meta-embedded-plus
+    rm -rf sources/meta-openamp
+    rm -rf sources/meta-security
+    rm -rf sources/meta-xilinx
 }
 
 
