@@ -14,8 +14,8 @@ VIVADO=2025.2
 
 main ()
 {
-    #Parse commandline
-    parse_cmd "$@"
+    #Parse commandline, this breaks some things later on, debuggin... set parameters manually above
+    #parse_cmd "$@"
 
     #Insecure mode patching
     patch_insecure
