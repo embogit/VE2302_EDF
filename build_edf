@@ -27,7 +27,6 @@ main ()
 
     #Get vivado version
     LOPPER=$(which lopper)
-    LOPPER="fo/2025.2"
     if [[ $LOPPER == *"2025.2"* ]]; then
 	VIVADO="2025.2"
     elif [[ $LOPPER == *"2026.1"* ]]; then
@@ -85,6 +84,11 @@ main ()
 
 
     sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302
+
+    #Add local packages to build keeping compatibility with petalinux also
+    if ! grep -q peekpoke "build/conf/local.conf"; then
+	grep CON sources/meta-user/conf/user-rootfsconfig | sed 'sxCONFIG_\(.*\)xIMAGE_INSTALL:append = " \1"x' >> build/conf/local.conf
+    fi
 
     cd build
 
@@ -225,10 +229,10 @@ EOF
     fi
 }
 
-clean_sw
+clean_sw ()
 {
     echo "Cleaning SW build results"
-    #TODO
+    rm -rf build output
 }
 
 
