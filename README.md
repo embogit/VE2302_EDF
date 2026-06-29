@@ -28,3 +28,38 @@ build_edf -platform -sstate /storage/sstate
 ## Cloning
 
 Remember to use **git clone --recursive** to get HW submodule cloned.
+
+## Tips
+
+### Initial setup
+
+You need to setup git for repo to work
+
+~~~
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+~~~
+
+Also you need to install repo
+~~~
+curl https://storage.googleapis.com/git-repo-downloads/repo > repo
+chmod a+x repo
+sudo mv repo /usr/bin
+~~~
+
+
+### repo not working behind firewall
+
+Add this to the beginning of repo command (added it after the initial imports starting from line 30)
+
+~~~
+import ssl
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    # Legacy Python that doesn't verify HTTPS certificates by default
+    pass
+else:
+    # Handle target environment that doesn't support HTTPS verification
+    ssl._create_default_https_context = _create_unverified_https_context
+~~~
