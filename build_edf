@@ -202,7 +202,6 @@ $(basename $0) -platform -sstate /storage/sstate
 	esac
     done
 
-    set -- "${POSITIONAL_ARGS[@]}"
 }
 
 patch_insecure()
