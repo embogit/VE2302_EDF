@@ -14,11 +14,9 @@ VIVADO=2025.2
 
 main ()
 {
-    #Parse commandline, this breaks some things later on, debuggin... set parameters manually above
-    #parse_cmd "$@"
+    #Parse commandline
+    parse_cmd "$@"
 
-    #Insecure mode patching
-    patch_insecure
 
     ROOTDIR=$PWD
 
@@ -58,11 +56,14 @@ main ()
 	exit 1
     fi
 
-
+    #Insecure mode patching
+    patch_insecure
 
     repo sync
 
+    
     #Needed early for build-machine-conf
+    set $ROOTDIR  #This is mandatory fue to shift + next script interactions
     source edf-init-build-env
 
     cd $ROOTDIR
@@ -129,7 +130,6 @@ main ()
 
 parse_cmd ()
 {
-    POSITIONAL_ARGS=()
     __usage="
 Usage: $(basename $0) [OPTIONS]
 
@@ -147,7 +147,6 @@ Example:
 $(basename $0) -platform -sstate /storage/sstate
 
 "
-
     while [[ $# -gt 0 ]]; do
 	case $1 in
 	    -insecure)
@@ -196,7 +195,6 @@ $(basename $0) -platform -sstate /storage/sstate
 		exit 1
 		;;
 	    *)
-		POSITIONAL_ARGS+=("$1")
 		shift
 		;;
 	esac
@@ -230,8 +228,9 @@ EOF
 
 clean_sw ()
 {
-    echo "Cleaning SW build results"
+    echo "Cleaning SW build"
     rm -rf build output
+    #rm -rf source/meta-xx
 }
 
 
