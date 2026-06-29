@@ -26,34 +26,34 @@ main ()
     #Get vivado version
     LOPPER=$(which lopper)
     if [[ $LOPPER == *"2025.2"* ]]; then
-	VIVADO="2025.2"
+        VIVADO="2025.2"
     elif [[ $LOPPER == *"2026.1"* ]]; then
-	VIVADO="2026.1"
+        VIVADO="2026.1"
     else
-	echo "Unknown Vivado version (lopper not found from Vivado path)"
-	exit 1
+        echo "Unknown Vivado version (lopper not found from Vivado path)"
+        exit 1
     fi
 
     repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v$VIVADO -m default-edf.xml
 
     #Select correct HW platform
     if [[ $VIVADO == "2025.2" ]]; then
-	if [[ $PLATFORM == 0 ]]; then
-	    HW_PROJECT=ve2302_oob_2025_2
-	else
-	    echo "Platform creation currently not supported for 2025.2"
-	    exit 1
-	fi
+        if [[ $PLATFORM == 0 ]]; then
+            HW_PROJECT=ve2302_oob_2025_2
+        else
+            echo "Platform creation currently not supported for 2025.2"
+            exit 1
+        fi
     elif [[ $VIVADO == "2026.1" ]]; then
-	if [[ $PLATFORM == 0 ]]; then
-	    HW_PROJECT=ve2302_oob_2026_1
-	else
-	    HW_PROJECT=ve2302_platform_2026_1
-	fi
-	
+        if [[ $PLATFORM == 0 ]]; then
+            HW_PROJECT=ve2302_oob_2026_1
+        else
+            HW_PROJECT=ve2302_platform_2026_1
+        fi
+        
     else
-	echo "Unsupported Vivado version $VIVADO"
-	exit 1
+        echo "Unsupported Vivado version $VIVADO"
+        exit 1
     fi
 
     #Insecure mode patching
@@ -61,7 +61,7 @@ main ()
 
     repo sync
 
-    
+
     #Needed early for build-machine-conf
     set $ROOTDIR/build  #This is mandatory fue to shift + next script interactions
     source edf-init-build-env
@@ -70,17 +70,17 @@ main ()
 
     #Build HW if it does not exist
     if [ ! -d $SDT_LOCATION ]; then
-	cd vivado-hw
-	make -f Makefile DESIGN_NAME=$HW_PROJECT
-	cd ..
+        cd vivado-hw
+        make -f Makefile DESIGN_NAME=$HW_PROJECT
+        cd ..
 
-	#Check that we have SDT i.e. build did not fail
-	if [ ! -d $SDT_LOCATION ]; then
-	    echo "Vivado SDT articats do not exist, possibly failed build"
-	    exit 1
-	fi
+        #Check that we have SDT i.e. build did not fail
+        if [ ! -d $SDT_LOCATION ]; then
+            echo "Vivado SDT articats do not exist, possibly failed build"
+            exit 1
+        fi
     else
-	echo "Vivado build exists, if you want to rebuild use -clean_hw option first"
+        echo "Vivado build exists, if you want to rebuild use -clean_hw option first"
     fi
 
 
@@ -88,7 +88,7 @@ main ()
 
     #Add local packages to build keeping compatibility with petalinux also
     if ! grep -q peekpoke "build/conf/local.conf"; then
-	grep CON sources/meta-user/conf/user-rootfsconfig | sed 'sxCONFIG_\(.*\)xIMAGE_INSTALL:append = " \1"x' >> build/conf/local.conf
+        grep CON sources/meta-user/conf/user-rootfsconfig | sed 'sxCONFIG_\(.*\)xIMAGE_INSTALL:append = " \1"x' >> build/conf/local.conf
     fi
 
     cd build
@@ -97,10 +97,10 @@ main ()
 
 
     if [ "$SSTATE_CACHE" != "" ]; then
-	echo "SSTATE_DIR ?= \"$SSTATE_CACHE\"" >> conf/local.conf
+        echo "SSTATE_DIR ?= \"$SSTATE_CACHE\"" >> conf/local.conf
     fi
     if [[ "$SOURCE_MIRROR" != "" ]]; then
-	echo "SOURCE_MIRROR_URL ?= \"$SOURCE_MIRROR\"" >> conf/local.conf
+        echo "SOURCE_MIRROR_URL ?= \"$SOURCE_MIRROR\"" >> conf/local.conf
     fi
 
     #Enable usage of generic EDF linux image for Versal by specifying it from commandline
@@ -111,16 +111,16 @@ main ()
 
     #Create Linux userspace
     if [[ $PLATFORM == 0 ]]; then
-	MACHINE=amd-cortexa72-common bitbake edf-linux-disk-image
-	wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic:1
-	echo "WIC image ready, copy it to sd-card with command:"
-	echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
+        MACHINE=amd-cortexa72-common bitbake edf-linux-disk-image
+        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic:1
+        echo "WIC image ready, copy it to sd-card with command:"
+        echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
     else
-	MACHINE=amd-cortexa72-common bitbake edf-platform-disk-image
-	MACHINE=amd-cortexa72-common bitbake meta-edf-app-sdk
-	wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic:1
-	echo "WIC image ready, copy it to sd-card with command:"
-	echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
+        MACHINE=amd-cortexa72-common bitbake edf-platform-disk-image
+        MACHINE=amd-cortexa72-common bitbake meta-edf-app-sdk
+        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic:1
+        echo "WIC image ready, copy it to sd-card with command:"
+        echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
     fi
 
 
@@ -148,56 +148,56 @@ $(basename $0) -platform -sstate /storage/sstate
 
 "
     while [[ $# -gt 0 ]]; do
-	case $1 in
-	    -insecure)
-		INSECURE_MODE=1
-		shift
-		;;
-	    -platform)
-		PLATFORM=1
-		shift
-		;;
-	    -sstate)
-		SSTATE_CACHE=$2
-		shift
-		shift
-		;;
-	    -mirror)
-		SOURCE_MIRROR=$2
-		shift
-		shift
-		;;
-	    -clean)
-		echo "Cleaning HW build results"
-	        cd vivado-hw
-		make -f Makefile clean
-		cd ..
-		clean_sw
-		exit 0
-		;;
-	    -clean_hw)
-		echo "Cleaning HW build results"
-	        cd vivado-hw
-		make -f Makefile clean
-		exit 0
-		;;
-	    -clean_sw)
-	        clean_sw
-		exit 0
-		;;
-	    -h|--help)
-		echo "$__usage"
-		shift
-		exit 0
-		;;
-	    -*|--*)
-		echo "Unknown option $1"
-		exit 1
-		;;
-	    *)
-		shift
-		;;
-	esac
+        case $1 in
+            -insecure)
+                INSECURE_MODE=1
+                shift
+                ;;
+            -platform)
+                PLATFORM=1
+                shift
+                ;;
+            -sstate)
+                SSTATE_CACHE=$2
+                shift
+                shift
+                ;;
+            -mirror)
+                SOURCE_MIRROR=$2
+                shift
+                shift
+                ;;
+            -clean)
+                echo "Cleaning HW build results"
+                cd vivado-hw
+                make -f Makefile realclean
+                cd ..
+                clean_sw
+                exit 0
+                ;;
+            -clean_hw)
+                echo "Cleaning HW build results"
+                cd vivado-hw
+                make -f Makefile realclean
+                exit 0
+                ;;
+            -clean_sw)
+                clean_sw
+                exit 0
+                ;;
+            -h|--help)
+                echo "$__usage"
+                shift
+                exit 0
+                ;;
+            -*|--*)
+                echo "Unknown option $1"
+                exit 1
+                ;;
+            *)
+                shift
+                ;;
+        esac
     done
 
 }
@@ -205,11 +205,11 @@ $(basename $0) -platform -sstate /storage/sstate
 patch_insecure()
 {
     if [[ $INSECURE_MODE == 1 ]]; then 
-	echo "Insecure mode, no certificate checking"
-	if ! grep -q insecure ".repo/repo/project.py"; then
+        echo "Insecure mode, no certificate checking"
+        if ! grep -q insecure ".repo/repo/project.py"; then
 
-	    #Patch to remove SSL certificate checking
-	    patch -p1 --ignore-whitespace << 'EOF'
+            #Patch to remove SSL certificate checking
+            patch -p1 --ignore-whitespace << 'EOF'
 --- a/.repo/repo/project.py
 +++ b/.repo/repo/project.py
 @@ -3039,6 +3039,7 @@ class Project:
@@ -222,7 +222,7 @@ patch_insecure()
              cmd += ["--silent", "--show-error"]
 EOF
 
-	fi
+        fi
     fi
 }
 
