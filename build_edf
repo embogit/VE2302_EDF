@@ -63,7 +63,7 @@ main ()
 
     
     #Needed early for build-machine-conf
-    set $ROOTDIR  #This is mandatory fue to shift + next script interactions
+    set $ROOTDIR/build  #This is mandatory fue to shift + next script interactions
     source edf-init-build-env
 
     cd $ROOTDIR
