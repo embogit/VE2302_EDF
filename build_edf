@@ -89,6 +89,10 @@ main ()
     #Add local packages to build keeping compatibility with petalinux also
     if ! grep -q peekpoke "build/conf/local.conf"; then
         grep CON sources/meta-user/conf/user-rootfsconfig | sed 'sxCONFIG_\(.*\)xIMAGE_INSTALL:append = " \1"x' >> build/conf/local.conf
+
+        #Add few editors
+        echo "IMAGE_INSTALL:append = \" nano\""  >> build/conf/local.conf
+        echo "IMAGE_INSTALL:append = \" emacs\"" >> build/conf/local.conf
     fi
 
     cd build
