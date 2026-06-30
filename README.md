@@ -63,3 +63,13 @@ else:
     # Handle target environment that doesn't support HTTPS verification
     ssl._create_default_https_context = _create_unverified_https_context
 ~~~
+
+### If the build is broken
+
+I do part of the devleopment at home machine without Vivado, so I might break sometimes things. I'll try to fix them ASAP :) And this is not official Avnet/Tria tree, altough I work as dedicated AMD FAE at Avnet. I just hope this helps people with VE2302 board/SOM or just porting their own custom board to EDF. At least I have learned a lot while doing this. If this really becomes more popular I promise to do changes in branches, test compile, use tags for releases etc. And I'm morer than happy to accept improvements...
+
+### Todo
+
+* Porting https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System to VE2302 (started to do this already)
+* Cleanup of Vivado build, probably not that complex Makefile magic is needed
+* Versal-AI port (this is not trivial as 6.2 still relies on Petalinux and memory controller setup for this is very tricky)
