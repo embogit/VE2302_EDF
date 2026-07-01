@@ -1,0 +1,14 @@
+machine:
+    post:
+        QEMU_HW_DTB_PS:
+            op: '='
+            val: "${QEMU_HW_DTB_PATH}/board-ve2302.dtb"
+        QEMU_HW_DTB_PMC:
+            op: '='
+            val: "${QEMU_HW_DTB_PATH}/board-versal-pmc-virt.dtb"
+        QEMU_HW_BOOT_MODE:
+            op: '='
+            val: "8"
+        QEMU_HW_SERIAL:
+            op: '='
+            val: "-serial null -serial null -serial null -serial mon:stdio"
