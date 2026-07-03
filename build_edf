@@ -84,7 +84,7 @@ main ()
     fi
 
 
-    sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302
+    sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --template ve2302.yaml --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302 --multiconfigfull --template ve2302.yaml
 
     #Add local packages to build keeping compatibility with petalinux also
     if ! grep -q peekpoke "build/conf/local.conf"; then
@@ -107,7 +107,7 @@ main ()
         echo "SOURCE_MIRROR_URL ?= \"$SOURCE_MIRROR\"" >> conf/local.conf
     fi
 
-    #Enable usage of generic EDF linux image for Versal by specifying it from commandline
+    #Enable usage of generic EDF linux image for Versal by specifying it from commandline separately
     sed -i '/MACHINE = \"versal-generic-xcve2302\"/d' conf/local.conf
 
     #Create boot parts of image (single stage boot)
@@ -115,16 +115,19 @@ main ()
 
     #Create Linux userspace
     if [[ $PLATFORM == 0 ]]; then
-        MACHINE=amd-cortexa72-common bitbake edf-linux-disk-image
-        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic:1
+        MACHINE=versal-generic-xcve2302 bitbake edf-linux-disk-image
+        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-linux-disk-image-versal-generic-xcve2302.rootfs.wic:1
         echo "WIC image ready, copy it to sd-card with command:"
-        echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
+        echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-versal-generic-xcve2302.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
     else
-        MACHINE=amd-cortexa72-common bitbake edf-platform-disk-image
+ 
+        MACHINE=versal-generic-xcve2302 bitbake edf-platform-disk-image
         MACHINE=amd-cortexa72-common bitbake meta-edf-app-sdk
-        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic:1
+        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic:1
+        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic.qemu-sd:1
+        
         echo "WIC image ready, copy it to sd-card with command:"
-        echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-platform-disk-image-amd-cortexa72-common.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
+        echo "sudo dd if=tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
     fi
 
 
