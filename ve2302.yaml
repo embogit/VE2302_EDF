@@ -1,14 +1,17 @@
 machine:
     post:
+        QEMU_HW_DTB_PATH:
+            op: '='
+            val: "${DEPLOY_DIR_IMAGE}/qemu-hw-devicetrees/multiarch"
         QEMU_HW_DTB_PS:
             op: '='
-            val: "${QEMU_HW_DTB_PATH}/board-ve2302.dtb"
+            val: "${QEMU_HW_DTB_PATH}/board-versal-xcve2302-ps-virt.dtb"
         QEMU_HW_DTB_PMC:
             op: '='
-            val: "${QEMU_HW_DTB_PATH}/board-versal-pmc-virt.dtb"
+            val: "${QEMU_HW_DTB_PATH}/board-versal-xcve2302-pmc-virt.dtb"
         QEMU_HW_BOOT_MODE:
             op: '='
-            val: "8"
+            val: "3"
         QEMU_HW_SERIAL:
             op: '='
             val: "-serial null -serial null -serial null -serial mon:stdio"

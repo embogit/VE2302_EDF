@@ -177,7 +177,7 @@ $(basename $0) -platform -sstate /storage/sstate
             -clean)
                 echo "Cleaning HW build results"
                 cd vivado-hw
-                make -f Makefile realclean
+                make -f Makefile clean
                 cd ..
                 clean_sw
                 exit 0
@@ -185,7 +185,7 @@ $(basename $0) -platform -sstate /storage/sstate
             -clean_hw)
                 echo "Cleaning HW build results"
                 cd vivado-hw
-                make -f Makefile realclean
+                make -f Makefile clean
                 exit 0
                 ;;
             -clean_sw)
