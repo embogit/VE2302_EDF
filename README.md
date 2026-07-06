@@ -47,6 +47,10 @@ chmod a+x repo
 sudo mv repo /usr/bin
 ~~~
 
+### QEMU
+
+QEMU should boot up with command `runqemu versal-generic-xcve2302 nographic serial` (remember to source edf-init-build-env)
+
 
 ### repo not working behind firewall
 
@@ -70,7 +74,6 @@ I do part of the devleopment at home machine without Vivado, so I might break so
 
 ### Todo
 
-* Get QEMU working (needed for good working Vitis flow)
 * Porting https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System to VE2302 (started to do this already)
 * Cleanup of Vivado build, probably not that complex Makefile magic is needed
 * Versal-AI port (this is not trivial as 6.2 still relies on Petalinux and memory controller setup for this is very tricky)
