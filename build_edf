@@ -93,13 +93,16 @@ main ()
         #Add few editors
         echo "IMAGE_INSTALL:append = \" nano\""  >> build/conf/local.conf
         echo "IMAGE_INSTALL:append = \" emacs\"" >> build/conf/local.conf
+
+        #Remove warning on unsupported machine
+        echo "AMD-EDF_IMAGE_SUPPORTED_MACHINES:append = \" versal-generic-xcve2302\"" >> build/conf/local.conf
     fi
 
     cd build
 
     bitbake-layers add-layer ../sources/meta-user
 
-
+    #Configure caches to speed up build
     if [ "$SSTATE_CACHE" != "" ]; then
         echo "SSTATE_DIR ?= \"$SSTATE_CACHE\"" >> conf/local.conf
     fi
