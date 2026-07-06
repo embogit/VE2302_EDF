@@ -1,6 +1,7 @@
 machine:
     post:
         QEMU_HW_DTB_PS:
+            comment: "Decivetree sources can be found from https://github.com/Xilinx/qemu-devicetrees/"
             op: '='
             val: "${QEMU_HW_DTB_PATH}/board-versal-xcve2302-ps-virt.dtb"
         QEMU_HW_DTB_PMC:
