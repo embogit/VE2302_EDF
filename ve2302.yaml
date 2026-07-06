@@ -9,6 +9,3 @@ machine:
         QEMU_HW_BOOT_MODE:
             op: '='
             val: "3"
-        QEMU_HW_SERIAL:
-            op: '='
-            val: "-serial null -serial null -serial null -serial mon:stdio"
