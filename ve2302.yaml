@@ -1,8 +1,5 @@
 machine:
     post:
-        QEMU_HW_DTB_PATH:
-            op: '='
-            val: "${DEPLOY_DIR_IMAGE}/qemu-hw-devicetrees/multiarch"
         QEMU_HW_DTB_PS:
             op: '='
             val: "${QEMU_HW_DTB_PATH}/board-versal-xcve2302-ps-virt.dtb"
