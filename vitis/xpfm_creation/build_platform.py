@@ -28,7 +28,7 @@ platform = client.create_platform_component(name = "versal-generic-xcve2302_plat
 platform = client.get_component(name="versal-generic-xcve2302_platform")
 domain = platform.get_domain(name="linux_psv_cortexa72")
 
-status = domain.set_bif(path=rootdir + "/vitis/xpfm_creation/src/a72/xrt/linux.bif")
+status = domain.set_bif(path=rootdir + "/build/tmp/deploy/images/versal-generic-xcve2302/boot.bin-extracted/bootgen.bif")
 
 status = domain.set_boot_dir(path=rootdir + "/build/tmp/deploy/images/versal-generic-xcve2302")
 
