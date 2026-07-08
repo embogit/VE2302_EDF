@@ -1,0 +1,13 @@
+#!/bin/bash
+ROOTDIR=$PWD
+
+source edf-init-build-env
+
+cd $ROOTDIR
+
+rm -rfv vitis/build/workspace/*
+
+cd vitis/xpfm_creation/
+
+vitis -s build_platform.py --rootdir=$ROOTDIR
+

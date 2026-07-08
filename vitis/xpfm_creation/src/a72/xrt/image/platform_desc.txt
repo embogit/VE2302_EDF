@@ -1,0 +1,2 @@
+versal-generic-xcve2302
+
