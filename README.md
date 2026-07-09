@@ -25,9 +25,9 @@ Example:
 build_edf -platform -sstate /storage/sstate  
 ~~~
 
-## Cloning
+## Cloning & updates
 
-Remember to use **git clone --recursive** to get HW submodule cloned.
+Remember to use **git clone --recursive** to get HW submodule cloned at the beginning. And use **git pull --recurse-submodules** to update the submodules automatically
 
 ## Tips
 
