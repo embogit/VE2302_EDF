@@ -78,6 +78,13 @@ Build with Ubuntu 24.04 will fail unless apparmor protection is changed, just ex
 
 ### Todo
 
-* Porting https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System to VE2302 (started to do this already)
+* Porting https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System to VE2302
+   * Platform creation (done)
+   * Compile HLS kernels (works for one which means that platform files work)
+   * Add AI engine
+   * Link design
+   * Package
+   * HW-test
+   * Cleanup the script
 * Cleanup of Vivado build, probably not that complex Makefile magic is needed
 * Versal-AI port (this is not trivial as 6.2 still relies on Petalinux and memory controller setup for this is very tricky)
