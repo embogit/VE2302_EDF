@@ -1,13 +1,39 @@
 #!/bin/bash
+#This is WIP, will clean up and move to functions etc. in future when it works
+#This now follows more manual steps trying to get working image with scripts+GUI
 ROOTDIR=$PWD
+XPFM=$ROOTDIR/vitis/build/workspace/versal-generic-xcve2302_platform/export/versal-generic-xcve2302_platform/versal-generic-xcve2302_platform.xpfm
+XODIR=$ROOTDIR/vitis/build/xo_hw/
 
 source edf-init-build-env
 
 cd $ROOTDIR
 
-rm -rfv vitis/build/workspace/*
+rm -rf vitis/build/workspace/*
+rm -rf vitis/build/xo_hw/*
 
+mkdir vitis/build/xo_hw/
+
+#Build xpfm platform
 cd vitis/xpfm_creation/
 
 vitis -s build_platform.py --rootdir=$ROOTDIR
 
+#Build IP
+#vadd_s
+cd $ROOTDIR/vitis/ip/vadd_s
+v++ --compile --debug --save-temps \
+    --platform ${XPFM} \
+    --kernel vadd_s \
+    --output ${XODIR}/vadd_s.xo \
+    --log_dir ${XODIR}/vadd_s/log \
+    --temp_dir ${XODIR}/vadd_s/work \
+    --report_dir ${XODIR}/vadd_s/report \
+    ./src/vadd_s.cpp
+
+
+#aie
+#counter
+#mm2s_vadd_s
+#s2mm_vadd_s
+#subtractor
