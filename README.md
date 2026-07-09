@@ -4,6 +4,8 @@ EDF flow for Tria VE2302 evaluation board. This is based on original meta-user a
 
 ## Usage
 
+### EDF flow
+
 The script will automatically detect Vivado version and use matching EDF version. EDF has some version dependencies especially in lopper (2025.2 lopper does not work with 2026.06 EDF and version matching is currently needed).
 
 Usage: build_edf [OPTIONS]  
@@ -14,15 +16,29 @@ Options:
   -platform              Build full platform imagage and SDK  
   -sstate <value>        Override SSTATE_CACHE location  
   -mirror <value>        Override SOURCE_MIRROR location  
-  -clean                 Cleans HW + SW build results  
-  -clean_hw              Cleans HW build  
-  -clean_sw              Cleans SW build  
-  -h, --help             Help text  
+  -clean                 Cleans HW + SW build artifacts  
+  -clean_hw              Cleans only HW build  
+  -clean_sw              Cleans only SW build  
+  -h, --help             This help text  
 ~~~
   
 Example:  
 ~~~
 build_edf -platform -sstate /storage/sstate  
+~~~
+
+### Vitis example
+
+(This is under work, the public files are little behind of my local copy, see TODO section)
+
+The example script will compile one of the AMD examples using HLS, RTL and AIE kernels (https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System) to this EDF Linux platform just as a proof of concept to verify platform functionality as extendable platform. The compilation will be via a very simple script which should be easy to replicate. 
+
+Usage: build_vitis [OPTIONS]  
+  
+Options:  
+~~~
+  -clean                 Cleans build artifacts 
+  -h, --help             Help text  
 ~~~
 
 ## Cloning & updates
@@ -70,7 +86,7 @@ else:
 
 ### If the build is broken
 
-I do part of the devleopment at home machine without Vivado, so I might break sometimes things. I'll try to fix them ASAP :) And this is not official Avnet/Tria tree, altough I work as dedicated AMD FAE at Avnet. I just hope this helps people with VE2302 board/SOM or just porting their own custom board to EDF. At least I have learned a lot while doing this. If this really becomes more popular I promise to do changes in branches, test compile, use tags for releases etc. And I'm morer than happy to accept improvements...
+I do part of the development at home machine without Vivado, so I might break sometimes things. I'll try to fix them ASAP :) And this is not official Avnet/Tria tree, altough I work as dedicated AMD FAE at Avnet. I just hope this helps people with VE2302 board/SOM or just porting their own custom board to EDF. At least I have learned a lot while doing this. If this really becomes more popular I promise to do changes in branches, test compile, use tags for releases etc. And I'm morer than happy to accept improvements...
 
 ### Building with Ubuntu 24.04
 
@@ -80,7 +96,7 @@ Build with Ubuntu 24.04 will fail unless apparmor protection is changed, just ex
 
 * Porting https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System to VE2302
    * Platform creation (done)
-   * Compile HLS kernels (works for one which means that platform files work)
+   * Compile HLS kernels (HLS+RTL work in local copy)
    * Add AI engine
    * Link design
    * Package
