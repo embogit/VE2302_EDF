@@ -63,6 +63,11 @@ chmod a+x repo
 sudo mv repo /usr/bin
 ~~~
 
+### Vitis linking
+
+Linking will fail unless the VE2302 board files are copied to .../Xilinx/2026.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx directory. vpl does not seem to honor Vivado_init.tcl or vivado parameters given to v++ linker.
+
+
 ### QEMU
 
 QEMU should boot up with command `runqemu versal-generic-xcve2302 nographic serial` (remember to source edf-init-build-env)
@@ -98,7 +103,8 @@ Build with Ubuntu 24.04 will fail unless apparmor protection is changed, just ex
    * Platform creation (done)
    * Compile HLS kernels (done)
    * Add AI engine (done)
-   * Link design
+   * Link design (done)
+   * Cross compiled Linux executables
    * Package
    * HW-test
    * Cleanup the script (started)
