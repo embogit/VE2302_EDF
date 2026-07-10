@@ -8,6 +8,8 @@ ROOTDIR=$PWD
 XPFM=$ROOTDIR/vitis/build/workspace/versal-generic-xcve2302_platform/export/versal-generic-xcve2302_platform/versal-generic-xcve2302_platform.xpfm
 XODIR=$ROOTDIR/vitis/build/xo_hw/
 
+export ROOTDIR
+
 main ()
 {
 
@@ -18,7 +20,16 @@ main ()
 
     cd $ROOTDIR
     mkdir -p vitis/build/xo_hw/
+    mkdir -p vitis/build/linux/
 
+    #Populate SDK
+    if [ ! -d $ROOTDIR/vitis/build/sdk ]; then
+        echo "Installing SDK, this will take a while"
+        $ROOTDIR/build/tmp/deploy/sdk/amd-edf-glibc-x86_64-meta-edf-app-sdk-cortexa72-cortexa53-amd-cortexa72-common-toolchain-*.sh -y -d $ROOTDIR/vitis/build/sdk
+    else
+        echo "SDK already installed"
+    fi
+    
     #Build xpfm platform
     if [ ! -d vitis/build/workspace/versal-generic-xcve2302_platform/ ]; then 
         cd vitis/xpfm_creation/
@@ -107,6 +118,10 @@ main ()
     else
         echo "Skipping linking"
     fi
+
+    #Build Linux apps
+    make all -C $ROOTDIR/vitis/linux/aie_dly_test
+    make all -C $ROOTDIR/vitis/linux/vadd_s
     
 }
 
@@ -147,6 +162,8 @@ $(basename $0) -platform -sstate /storage/sstate
                 rm -rf vitis/build/workspace/*
                 rm -rf vitis/build/xo_hw/*
                 rm -rf vitis/build/platform/*
+                rm -rf vitis/build/linux/*
+                rm -rf vitis/build/sdk
                 find vitis -name xcd.log | xargs rm -f
                 exit 0
                 ;;

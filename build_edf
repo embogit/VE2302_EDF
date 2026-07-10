@@ -70,9 +70,7 @@ main ()
 
     #Build HW if it does not exist
     if [ ! -d $SDT_LOCATION ]; then
-        cd vivado-hw
-        make -f Makefile DESIGN_NAME=$HW_PROJECT
-        cd ..
+        make -f Makefile DESIGN_NAME=$HW_PROJECT -C vivado-hw
 
         #Check that we have SDT i.e. build did not fail
         if [ ! -d $SDT_LOCATION ]; then
@@ -96,6 +94,7 @@ main ()
 
         #Remove warning on unsupported machine
         echo "AMD-EDF_IMAGE_SUPPORTED_MACHINES:append = \" versal-generic-xcve2302\"" >> build/conf/local.conf
+
     fi
 
     cd build
