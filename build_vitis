@@ -1,39 +1,107 @@
 #!/bin/bash
-#This is WIP, will clean up and move to functions etc. in future when it works
-#This now follows more manual steps trying to get working image with scripts+GUI
+###########################################################################
+#This is WIP, not all steps still in script
+###########################################################################
+DEVICE="xcve2302-sfva784-1LP-e-S"
+
 ROOTDIR=$PWD
 XPFM=$ROOTDIR/vitis/build/workspace/versal-generic-xcve2302_platform/export/versal-generic-xcve2302_platform/versal-generic-xcve2302_platform.xpfm
 XODIR=$ROOTDIR/vitis/build/xo_hw/
 
-source edf-init-build-env
+main ()
+{
 
-cd $ROOTDIR
+    parse_cmd "$@"
+    
+    set $ROOTDIR/build
+    source edf-init-build-env
 
-rm -rf vitis/build/workspace/*
-rm -rf vitis/build/xo_hw/*
+    cd $ROOTDIR
+    mkdir -p vitis/build/xo_hw/
 
-mkdir vitis/build/xo_hw/
+    #Build xpfm platform
+    cd vitis/xpfm_creation/
+    vitis -s build_platform.py --rootdir=$ROOTDIR
 
-#Build xpfm platform
-cd vitis/xpfm_creation/
+    #Build IP
 
-vitis -s build_platform.py --rootdir=$ROOTDIR
+    #vadd_s
+    cd $ROOTDIR/vitis/ip/vadd_s
+    compile_hls "vadd_s"
 
-#Build IP
-#vadd_s
-cd $ROOTDIR/vitis/ip/vadd_s
-v++ --compile --debug --save-temps \
-    --platform ${XPFM} \
-    --kernel vadd_s \
-    --output ${XODIR}/vadd_s.xo \
-    --log_dir ${XODIR}/vadd_s/log \
-    --temp_dir ${XODIR}/vadd_s/work \
-    --report_dir ${XODIR}/vadd_s/report \
-    ./src/vadd_s.cpp
+    #mm2s_vadd_s
+    cd $ROOTDIR/vitis/ip/mm2s_vadd_s
+    compile_hls "mm2s_vadd_s"
+    
+    #s2mm_vadd_s
+    cd $ROOTDIR/vitis/ip/s2mm_vadd_s
+    compile_hls "s2mm_vadd_s"
+
+    #counter
+    mkdir -p $ROOTDIR/vitis/build/xo_hw/counter
+    cd $ROOTDIR/vitis/build/xo_hw/counter
+    vivado -mode batch -source ${ROOTDIR}/vitis/ip/counter/pack_kernel.tcl -tclargs counter ${DEVICE} ${XODIR}/counter.xo ${ROOTDIR}/vitis/ip/counter
+
+    #subtractor
+    mkdir -p $ROOTDIR/vitis/build/xo_hw/subtractor
+    cd $ROOTDIR/vitis/build/xo_hw/subtractor
+    vivado -mode batch -source ${ROOTDIR}/vitis/ip/subtractor/pack_kernel.tcl -tclargs subtractor ${DEVICE} ${XODIR}/subtractor.xo ${ROOTDIR}/vitis/ip/subtractor
+
+    #aie
+}
+
+compile_hls ()
+{
+    v++ --compile --debug --save-temps \
+        --platform ${XPFM} \
+        --kernel $1 \
+        --output ${XODIR}/$1.xo \
+        --log_dir ${XODIR}/$1/log \
+        --temp_dir ${XODIR}/$1/work \
+        --report_dir ${XODIR}/$1/report \
+        ./src/$1.cpp
+}
 
 
-#aie
-#counter
-#mm2s_vadd_s
-#s2mm_vadd_s
-#subtractor
+parse_cmd ()
+{
+    __usage="
+Usage: $(basename $0) [OPTIONS]
+
+Options:
+  -clean                 Clean build artifacts
+  -h, --help             Help text
+
+Example:
+$(basename $0) -platform -sstate /storage/sstate
+
+"
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -clean)
+                echo "Cleaning Vitis build results"
+                rm -rf vitis/build/workspace/*
+                rm -rf vitis/build/xo_hw/*
+                find vitis -name xcd.log | xargs rm -f
+                exit 0
+                ;;
+            -h|--help)
+                echo "$__usage"
+                shift
+                exit 0
+                ;;
+            -*|--*)
+                echo "Unknown option $1"
+                exit 1
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+}
+
+
+#Trick as bash does not have forward declarations
+main "$@"
