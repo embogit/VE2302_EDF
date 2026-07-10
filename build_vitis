@@ -48,6 +48,20 @@ main ()
     vivado -mode batch -source ${ROOTDIR}/vitis/ip/subtractor/pack_kernel.tcl -tclargs subtractor ${DEVICE} ${XODIR}/subtractor.xo ${ROOTDIR}/vitis/ip/subtractor
 
     #aie
+    mkdir -p $ROOTDIR/vitis/build/xo_hw/aie
+    cd $ROOTDIR/vitis/ip/aie
+
+    aiecompiler \
+	-include=./src -include=./src/graphs -include=./src/kernels \
+	-target=hw -v --platform=${XPFM} --workdir=${XODIR}/aie/Work \
+        --constraints=./src/datamove_app.aiecst \
+	./src/datamove_app.cpp \
+        --output-archive=${XODIR}/libadf.a \
+	--kernel-linting -xlopt=1 -Xmapper=BufferOptLevel7 --pl-freq=500.0 \
+        --pl-register-threshold=125 --log-level=5 --test-iterations=-1 \
+        --pl-axi-lite=false \
+	|& tee ${XODIR}/aie/aiecompiler.log
+    
 }
 
 compile_hls ()

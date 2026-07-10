@@ -1,0 +1,33 @@
+{
+  "NodeConstraints": {
+    "mygraph_top.dmove_i[2]": {
+      "tile": {
+        "column": 13,
+        "row": 0,
+        "tile_type": "core"
+      }
+    },
+    "mygraph_top.dmove_i[3]": {
+      "tile": {
+        "column": 14,
+        "row": 0,
+        "tile_type": "core"
+      }
+    },
+    "mygraph_top.dmove_i[0]": {
+      "tile": {
+        "column": 11,
+        "row": 0,
+        "tile_type": "core"
+      }
+    },
+    "mygraph_top.dmove_i[1]": {
+      "tile": {
+        "column": 12,
+        "row": 1,
+        "tile_type": "core"
+      }
+    }
+  }
+}
+
