@@ -104,7 +104,7 @@ Build with Ubuntu 24.04 will fail unless apparmor protection is changed, just ex
    * Compile HLS kernels (done)
    * Add AI engine (done)
    * Link design (done)
-   * Cross compiled Linux executables
+   * Cross compiled Linux executables (done)
    * Package
    * HW-test
    * Cleanup the script (started)
