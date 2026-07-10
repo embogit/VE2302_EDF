@@ -20,9 +20,11 @@ main ()
     mkdir -p vitis/build/xo_hw/
 
     #Build xpfm platform
-    cd vitis/xpfm_creation/
-    vitis -s build_platform.py --rootdir=$ROOTDIR
-
+    if [ ! -d vitis/build/workspace/versal-generic-xcve2302_platform/ ]; then 
+        cd vitis/xpfm_creation/
+        vitis -s build_platform.py --rootdir=$ROOTDIR
+    fi
+    
     #Build IP
 
     #vadd_s
@@ -38,42 +40,90 @@ main ()
     compile_hls "s2mm_vadd_s"
 
     #counter
-    mkdir -p $ROOTDIR/vitis/build/xo_hw/counter
-    cd $ROOTDIR/vitis/build/xo_hw/counter
-    vivado -mode batch -source ${ROOTDIR}/vitis/ip/counter/pack_kernel.tcl -tclargs counter ${DEVICE} ${XODIR}/counter.xo ${ROOTDIR}/vitis/ip/counter
-
+    if [ ! -f $XODIR/counter.xo ]; then 
+        mkdir -p $ROOTDIR/vitis/build/xo_hw/counter
+        cd $ROOTDIR/vitis/build/xo_hw/counter
+        vivado -mode batch -source ${ROOTDIR}/vitis/ip/counter/pack_kernel.tcl -tclargs counter ${DEVICE} ${XODIR}/counter.xo ${ROOTDIR}/vitis/ip/counter
+    else
+        echo "Skipping already compiled counter"
+    fi
+    
+    
     #subtractor
-    mkdir -p $ROOTDIR/vitis/build/xo_hw/subtractor
-    cd $ROOTDIR/vitis/build/xo_hw/subtractor
-    vivado -mode batch -source ${ROOTDIR}/vitis/ip/subtractor/pack_kernel.tcl -tclargs subtractor ${DEVICE} ${XODIR}/subtractor.xo ${ROOTDIR}/vitis/ip/subtractor
+    if [ ! -f $XODIR/subtractor.xo ]; then 
+        mkdir -p $ROOTDIR/vitis/build/xo_hw/subtractor
+        cd $ROOTDIR/vitis/build/xo_hw/subtractor
+        vivado -mode batch -source ${ROOTDIR}/vitis/ip/subtractor/pack_kernel.tcl -tclargs subtractor ${DEVICE} ${XODIR}/subtractor.xo ${ROOTDIR}/vitis/ip/subtractor
+    else
+        echo "Skipping already compiled: subtractor"
+    fi
 
     #aie
     mkdir -p $ROOTDIR/vitis/build/xo_hw/aie
     cd $ROOTDIR/vitis/ip/aie
 
-    aiecompiler \
-	-include=./src -include=./src/graphs -include=./src/kernels \
-	-target=hw -v --platform=${XPFM} --workdir=${XODIR}/aie/Work \
-        --constraints=./src/datamove_app.aiecst \
-	./src/datamove_app.cpp \
-        --output-archive=${XODIR}/libadf.a \
-	--kernel-linting -xlopt=1 -Xmapper=BufferOptLevel7 --pl-freq=500.0 \
-        --pl-register-threshold=125 --log-level=5 --test-iterations=-1 \
-        --pl-axi-lite=false \
-	|& tee ${XODIR}/aie/aiecompiler.log
+    if [ ! -f $XODIR/libadf.a ]; then 
+        aiecompiler \
+	    -include=./src -include=./src/graphs -include=./src/kernels \
+	    -target=hw -v --platform=${XPFM} --workdir=${XODIR}/aie/Work \
+            --constraints=./src/datamove_app.aiecst \
+	    ./src/datamove_app.cpp \
+            --output-archive=${XODIR}/libadf.a \
+	    --kernel-linting -xlopt=1 -Xmapper=BufferOptLevel7 --pl-freq=500.0 \
+            --pl-register-threshold=125 --log-level=5 --test-iterations=-1 \
+            --pl-axi-lite=false \
+	    |& tee ${XODIR}/aie/aiecompiler.log
+    else
+        echo "Skipping already compiled: aie"
+    fi
+
+    #Link the design
+    cd $ROOTDIR
+
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    # This linking will fail unless the VE2302 board files are copied to
+    # .../Xilinx/2026.1/data/xhub/boards/XilinxBoardStore/boards/Xilinx
+    # directory. vpl does not seem to honor Vivado_init.tcl, the vivado
+    # parameter below does not work either
+    #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    
+    if [ ! -f $ROOTDIR/vitis/build/platform/versal-generic-xcve2302_linked.xsa ]; then 
+    v++ --link --debug --save-temps \
+        --vivado.param "board.repoPaths=vivado-hw/bdf_local" \
+	--target hw \
+	--platform ${XPFM} \
+	--config vitis/system.cfg \
+        vitis/build/xo_hw/counter.xo \
+        vitis/build/xo_hw/mm2s_vadd_s.xo \
+        vitis/build/xo_hw/s2mm_vadd_s.xo \
+        vitis/build/xo_hw/subtractor.xo \
+        vitis/build/xo_hw/vadd_s.xo \
+        vitis/build/xo_hw/libadf.a \
+	--output vitis/build/platform/versal-generic-xcve2302_linked.xsa \
+        --log_dir vitis/build/platform/log \
+        --temp_dir vitis/build/platform/work \
+        --report_dir vitis/build/platform/report \
+	|& tee vitis/build/vpp_link.log
+    else
+        echo "Skipping linking"
+    fi
     
 }
 
 compile_hls ()
 {
-    v++ --compile --debug --save-temps \
-        --platform ${XPFM} \
-        --kernel $1 \
-        --output ${XODIR}/$1.xo \
-        --log_dir ${XODIR}/$1/log \
-        --temp_dir ${XODIR}/$1/work \
-        --report_dir ${XODIR}/$1/report \
-        ./src/$1.cpp
+    if [ ! -f $XODIR/$1.xo ]; then 
+        v++ --compile --debug --save-temps \
+            --platform ${XPFM} \
+            --kernel $1 \
+            --output ${XODIR}/$1.xo \
+            --log_dir ${XODIR}/$1/log \
+            --temp_dir ${XODIR}/$1/work \
+            --report_dir ${XODIR}/$1/report \
+            ./src/$1.cpp
+    else
+        echo "Skipping already compiled: $1"
+    fi
 }
 
 
@@ -96,6 +146,7 @@ $(basename $0) -platform -sstate /storage/sstate
                 echo "Cleaning Vitis build results"
                 rm -rf vitis/build/workspace/*
                 rm -rf vitis/build/xo_hw/*
+                rm -rf vitis/build/platform/*
                 find vitis -name xcd.log | xargs rm -f
                 exit 0
                 ;;
