@@ -72,7 +72,7 @@ main ()
     if [ ! -d $SDT_LOCATION ]; then
         make -f Makefile DESIGN_NAME=$HW_PROJECT -C vivado-hw
         make -f Makefile DESIGN_NAME=$HW_PROJECT vitis_xsa_export -C vivado-hw
-  
+        
         #Check that we have SDT i.e. build did not fail
         if [ ! -d $SDT_LOCATION ]; then
             echo "Vivado SDT articats do not exist, possibly failed build"
@@ -97,7 +97,7 @@ main ()
         echo "AMD-EDF_IMAGE_SUPPORTED_MACHINES:append = \" versal-generic-xcve2302\"" >> build/conf/local.conf
 
         #Add ext4 rootimage for v++ packager
-        echo "IMAGE_FSTYPES    += \"ext4\""  >> build/conf/local.conf
+        echo "IMAGE_FSTYPES:append = \" ext4\""  >> build/conf/local.conf
     fi
 
     cd build
