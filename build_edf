@@ -71,8 +71,8 @@ main ()
     #Build HW if it does not exist
     if [ ! -d $SDT_LOCATION ]; then
         make -f Makefile DESIGN_NAME=$HW_PROJECT -C vivado-hw
-        make -f Makefile DESIGN_NAME=$HW_PROJECT write_pdi -C vivado-hw
-
+        make -f Makefile DESIGN_NAME=$HW_PROJECT vitis_xsa_export -C vivado-hw
+  
         #Check that we have SDT i.e. build did not fail
         if [ ! -d $SDT_LOCATION ]; then
             echo "Vivado SDT articats do not exist, possibly failed build"
@@ -82,7 +82,7 @@ main ()
         echo "Vivado build exists, if you want to rebuild use -clean_hw option first"
     fi
 
-    sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --template ve2302.yaml --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302 --multiconfigfull -p viviado-hw/pdi/$HW_PROJECT.pdi
+    sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --template ve2302.yaml --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302 --multiconfigfull
 
 
     #Add local packages to build keeping compatibility with petalinux also
@@ -114,7 +114,7 @@ main ()
 
     #Enable usage of generic EDF linux image for Versal by specifying it from commandline separately
     sed -i '/MACHINE = \"versal-generic-xcve2302\"/d' conf/local.conf
-
+    
     #Create boot parts of image (single stage boot)
     MACHINE=versal-generic-xcve2302 bitbake xilinx-bootbin
 
