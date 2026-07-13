@@ -122,7 +122,23 @@ main ()
     #Build Linux apps
     make all -C $ROOTDIR/vitis/linux/aie_dly_test
     make all -C $ROOTDIR/vitis/linux/vadd_s
-    
+
+    #Package eveything
+    mkdir -p vitis/build/sdcard/
+   
+   v++ --package --debug --save-temps \
+		--target hw \
+		--platform ${XPFM} \
+		--package.out_dir vitis/build/sdcard/ \
+		--package.boot_mode=sd \
+		--package.image_format=ext4 \
+		--package.kernel_image=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/Image \
+		--package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.ext4  \
+		vitis/build/xo_hw/libadf.a \
+		vitis/build/platform/versal-generic-xcve2302_linked.xsa \
+		--package.sd_file=vitis/build/linux/aie_dly_test \
+		--package.sd_file=vitis/build/linux/vadd_s \
+		|& tee build/vpp_pack.log 
 }
 
 compile_hls ()
