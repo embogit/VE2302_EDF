@@ -71,6 +71,7 @@ main ()
     #Build HW if it does not exist
     if [ ! -d $SDT_LOCATION ]; then
         make -f Makefile DESIGN_NAME=$HW_PROJECT -C vivado-hw
+        make -f Makefile DESIGN_NAME=$HW_PROJECT write_pdi -C vivado-hw
 
         #Check that we have SDT i.e. build did not fail
         if [ ! -d $SDT_LOCATION ]; then
@@ -81,8 +82,8 @@ main ()
         echo "Vivado build exists, if you want to rebuild use -clean_hw option first"
     fi
 
+    sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --template ve2302.yaml --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302 --multiconfigfull -p viviado-hw/pdi/$HW_PROJECT.pdi
 
-    sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --template ve2302.yaml --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302 --multiconfigfull --template ve2302.yaml
 
     #Add local packages to build keeping compatibility with petalinux also
     if ! grep -q peekpoke "build/conf/local.conf"; then
@@ -95,6 +96,8 @@ main ()
         #Remove warning on unsupported machine
         echo "AMD-EDF_IMAGE_SUPPORTED_MACHINES:append = \" versal-generic-xcve2302\"" >> build/conf/local.conf
 
+        #Add ext4 rootimage for v++ packager
+        echo "IMAGE_FSTYPES    += \"ext4\""  >> build/conf/local.conf
     fi
 
     cd build
