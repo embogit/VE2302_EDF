@@ -125,20 +125,27 @@ main ()
 
     #Package eveything
     mkdir -p vitis/build/sdcard/
-   
+
+#                --package.dtb=${ROOTDIR}/vitis/build/workspace/versal-generic-xcve2302_platform/export/versal-generic-xcve2302_platform/sw/boot/system.dtb \
+#                --package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-linux-disk-image-versal-generic-xcve2302.rootfs.ext4 \
+
    v++ --package --debug --save-temps \
 		--target hw \
-		--platform ${XPFM} \
+                --platform ${XPFM} \
 		--package.out_dir vitis/build/sdcard/ \
 		--package.boot_mode=sd \
+                --package.generate_sdcard \
 		--package.image_format=ext4 \
 		--package.kernel_image=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/Image \
-		--package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.ext4  \
+    		--package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.ext4  \
 		vitis/build/xo_hw/libadf.a \
 		vitis/build/platform/versal-generic-xcve2302_linked.xsa \
 		--package.sd_file=vitis/build/linux/aie_dly_test \
 		--package.sd_file=vitis/build/linux/vadd_s \
-		|& tee build/vpp_pack.log 
+		--log_dir vitis/build/sdcard/log \
+		--temp_dir vitis/build/sdcard/work \
+		--report_dir vitis/build/sdcard/report \
+       |& tee build/vpp_pack.log 
 }
 
 compile_hls ()
@@ -180,7 +187,7 @@ $(basename $0) -platform -sstate /storage/sstate
                 rm -rf vitis/build/platform/*
                 rm -rf vitis/build/linux/*
                 rm -rf vitis/build/sdk
-                find vitis -name xcd.log | xargs rm -f
+                find vitis -name xcd.log -print0 | xargs -0 rm -f
                 exit 0
                 ;;
             -h|--help)

@@ -93,6 +93,16 @@ main ()
         echo "IMAGE_INSTALL:append = \" nano\""  >> build/conf/local.conf
         echo "IMAGE_INSTALL:append = \" emacs\"" >> build/conf/local.conf
 
+        #Add packets needed for AIE/HLS even for OOB linux
+        if [[ $PLATFORM == 0 ]]; then
+            echo "IMAGE_INSTALL:append = \" xrt\""  >> build/conf/local.conf
+	    echo "IMAGE_INSTALL:append = \" xrt-dev\""  >> build/conf/local.conf
+	    echo "IMAGE_INSTALL:append = \" libsysfs\""  >> build/conf/local.conf
+	    echo "IMAGE_INSTALL:append = \" ai-engine-driver\""  >> build/conf/local.conf
+	    echo "IMAGE_INSTALL:append = \" ai-engine-driver-dev\""  >> build/conf/local.conf
+	    echo "IMAGE_INSTALL:append = \" sysfsutils-dev\""  >> build/conf/local.conf
+        fi
+
         #Remove warning on unsupported machine
         echo "AMD-EDF_IMAGE_SUPPORTED_MACHINES:append = \" versal-generic-xcve2302\"" >> build/conf/local.conf
 
@@ -121,6 +131,7 @@ main ()
     #Create Linux userspace
     if [[ $PLATFORM == 0 ]]; then
         MACHINE=versal-generic-xcve2302 bitbake edf-linux-disk-image
+        MACHINE=amd-cortexa72-common bitbake meta-edf-app-sdk
         wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-linux-disk-image-versal-generic-xcve2302.rootfs.wic:1
         echo "WIC image ready, copy it to sd-card with command:"
         echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-versal-generic-xcve2302.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
