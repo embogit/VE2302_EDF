@@ -143,7 +143,6 @@ main ()
     #Package eveything
     mkdir -p vitis/build/sdcard/
 
-
    v++ --package --debug --save-temps \
 		--target hw \
                --platform ${XPFM} \
@@ -151,11 +150,12 @@ main ()
 		--package.boot_mode=sd \
                 --package.generate_sdcard \
 		--package.image_format=ext4 \
-		--package.kernel_image=${ROOTDIR}/build/tmp/deploy/images/versalgeneric-xcve2302/Image \
-    		--package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generc-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.ext4  \
-                --package.dtb=${ROOTDIR}/vitis/build/workspace/versal-generic-xce2302_platform/export/versal-generic-xcve2302_platform/sw/boot/system.dtb \
+		--package.kernel_image=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/Image \
+    		--package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.ext4  \
+                --package.dtb=${ROOTDIR}/vitis/build/workspace/versal-generic-xcve2302_platform/export/versal-generic-xcve2302_platform/sw/boot/system.dtb \
 		vitis/build/xo_hw/libadf.a \
 		vitis/build/platform/versal-generic-xcve2302_linked.xsa \
+                -o vitis/build/sdcard/platform.xclbin \
 		--package.sd_file=vitis/build/linux/aie_dly_test \
 		--package.sd_file=vitis/build/linux/vadd_s \
 		--log_dir vitis/build/sdcard/log \
@@ -165,10 +165,17 @@ main ()
 
    #Now build the image components and add them to original wic, the sd-card build is not usable as packager does not
    #understand EFI or 3 partition boot used byu 2026.1 EDF
-
+   rm vitis/build/sdcard/sd_card.img
+   cp ${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic vitis/build/sdcard/platform_image.wic
+   
    #Call bootgen with original .bif with added elemts from packager bif, check this manually
+   bootgen -w -arch versal -image ${ROOTDIR}/vitis/build/sdcard/boot_image.bif -o ${ROOTDIR}/vitis/build/boot/boot.bin
 
-   #Copy Image and boot.bin to original wic
+   #Copy Linux files and boot.bin to original wic
+   wic cp vitis/build/linux/aie_dly_test vitis/build/sdcard/platform_image.wic:3/root
+   wic cp vitis/build/linux/vadd_s vitis/build/sdcard/platform_image.wic:3/root
+   wic cp vitis/build/sdcard/platform.xclbin vitis/build/sdcard/platform_image.wic:3/root
+   wic cp vitis/build/boot/boot.bin vitis/build/sdcard/platform_image.wic:1/
    
 }
 
@@ -211,6 +218,7 @@ $(basename $0) -platform -sstate /storage/sstate
                 rm -rf vitis/build/platform/*
                 rm -rf vitis/build/sdcard/*
                 rm -rf vitis/build/boot/*
+                rm -rf vitis/build/linux/*
                 rm -rf vitis/build/sdk
                 find vitis -name xcd.log -print0 | xargs -0 rm -f
                 exit 0

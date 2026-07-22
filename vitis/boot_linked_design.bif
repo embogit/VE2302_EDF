@@ -1,0 +1,30 @@
+//
+// Manually created .bif file merging the original generated .edf one and
+// the one coming from v++ packager.
+//
+
+the_ROM_image:
+{
+	optionaldata { vitis/build/boot/bootbin-version-string-versal-generic-xcve2302.txt, id=0x21 }
+	optionaldata { vitis/build/boot/bootbin-rollback-counter-versal-generic-xcve2302.bin, id=0x22 }
+	optionaldata { vitis/build/boot/xilinx-bootbin-aggregate.manifest.json, id=0x24 }
+	image {
+	 { type=bootimage, file=vitis/build/sdcard/work/package/system.pdi }
+	 { type=bootloader, file=vitis/build/boot/plmfw.elf }
+	 { core=psm, file=vitis/build/boot/psmfw.elf }
+	}
+        image
+        {
+          name=aie_image, id=0x18800000
+          { type=cdo
+            file = "vitis/build/sdcard/aie.merged.cdo.bin"
+         }
+        }   
+        image {
+	  id = 0x1c000000, name=apu_ss
+	  { type=raw, load=0x1000, file=vitis/build/workspace/versal-generic-xcve2302_platform_linked/export/versal-generic-xcve2302_platform_linked/sw/boot/system.dtb }
+	  { core=a72-0, exception_level = el-3, trustzone, file=vitis/build/boot/arm-trusted-firmware.elf }
+	  { core=a72-0, exception_level = el-2, file=vitis/build/boot/u-boot.elf }
+	}
+
+}
