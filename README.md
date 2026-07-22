@@ -44,8 +44,6 @@ Options:
 Caveats:
 * The board files need to be copier under Vivado installation for linker to work, I might get this working by injecting tcl to the process, there are some hooks for that, not well documented, and not high priority. Tried to fix this already in many ways which did not work with v++ 
 * The test files go under / directory, wic+ext4 cannot copy to directories (possibly can be fixed with debugfs script)
-* Some libraries missing, so acceleration not tested, debugging this now
-
 
 ## Cloning & updates
 
@@ -105,16 +103,6 @@ Build with Ubuntu 24.04 will fail unless apparmor protection is changed, just ex
 
 ### Todo
 
-* Porting https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System to VE2302
-   * Platform creation (done)
-   * Compile HLS kernels (done)
-   * Add AI engine (done)
-   * Link design (done)
-   * Cross compiled Linux executables (done)
-   * Package (done, does not fully work for EDF flow)
-   * Create dtb manually for the linked image (done)
-   * Manually create image based on EDF EFI image (done)
-   * HW-test (started, does not work but boots :))
-   * Cleanup the script (started)
+* Cleanup the scripts (started, less buildng if components are there etc.)
 * Cleanup of Vivado build, probably not that complex Makefile magic is needed
 * Versal-AI port (this is not trivial as 6.2 still relies on Petalinux and memory controller setup for this is very tricky)
