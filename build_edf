@@ -84,7 +84,6 @@ main ()
 
     sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --template ve2302.yaml --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302 --multiconfigfull
 
-
     #Add local packages to build keeping compatibility with petalinux also
     if ! grep -q peekpoke "build/conf/local.conf"; then
         grep CON sources/meta-user/conf/user-rootfsconfig | sed 'sxCONFIG_\(.*\)xIMAGE_INSTALL:append = " \1"x' >> build/conf/local.conf
@@ -92,17 +91,15 @@ main ()
         #Add few editors
         echo "IMAGE_INSTALL:append = \" nano\""  >> build/conf/local.conf
         echo "IMAGE_INSTALL:append = \" emacs\"" >> build/conf/local.conf
-
-        #Add packets needed for AIE/HLS even for OOB linux
-        if [[ $PLATFORM == 0 ]]; then
-            echo "IMAGE_INSTALL:append = \" xrt\""  >> build/conf/local.conf
-	    echo "IMAGE_INSTALL:append = \" xrt-dev\""  >> build/conf/local.conf
-	    echo "IMAGE_INSTALL:append = \" libsysfs\""  >> build/conf/local.conf
-	    echo "IMAGE_INSTALL:append = \" ai-engine-driver\""  >> build/conf/local.conf
-	    echo "IMAGE_INSTALL:append = \" ai-engine-driver-dev\""  >> build/conf/local.conf
-	    echo "IMAGE_INSTALL:append = \" sysfsutils-dev\""  >> build/conf/local.conf
-        fi
-
+        
+        #Add packets needed for AIE/HLS
+        echo "IMAGE_INSTALL:append = \" xrt\""  >> build/conf/local.conf
+        echo "IMAGE_INSTALL:append = \" xrt-dev\""  >> build/conf/local.conf
+        echo "IMAGE_INSTALL:append = \" libsysfs\""  >> build/conf/local.conf
+	echo "IMAGE_INSTALL:append = \" ai-engine-driver\""  >> build/conf/local.conf
+	echo "IMAGE_INSTALL:append = \" ai-engine-driver-dev\""  >> build/conf/local.conf
+	echo "IMAGE_INSTALL:append = \" sysfsutils-dev\""  >> build/conf/local.conf
+        
         #Remove warning on unsupported machine
         echo "AMD-EDF_IMAGE_SUPPORTED_MACHINES:append = \" versal-generic-xcve2302\"" >> build/conf/local.conf
 

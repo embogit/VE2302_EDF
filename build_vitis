@@ -169,7 +169,7 @@ main ()
    cp ${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic vitis/build/sdcard/platform_image.wic
    
    #Call bootgen with original .bif with added elemts from packager bif, check this manually
-   bootgen -w -arch versal -image ${ROOTDIR}/vitis/build/sdcard/boot_image.bif -o ${ROOTDIR}/vitis/build/boot/boot.bin
+   bootgen -w -arch versal -image ${ROOTDIR}/vitis/boot_linked_design.bif -o ${ROOTDIR}/vitis/build/boot/boot.bin
 
    #Copy Linux files and boot.bin to original wic
    wic cp vitis/build/linux/aie_dly_test vitis/build/sdcard/platform_image.wic:3/root
