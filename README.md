@@ -13,7 +13,7 @@ Usage: build_edf [OPTIONS]
 Options:  
 ~~~
   -insecure              Insecure download mode not checking certificates  
-  -platform              Build full platform imagage and SDK  
+  -platform              Build full platform imagage
   -sstate <value>        Override SSTATE_CACHE location  
   -mirror <value>        Override SOURCE_MIRROR location  
   -clean                 Cleans HW + SW build artifacts  
@@ -27,9 +27,9 @@ Example:
 build_edf -platform -sstate /storage/sstate  
 ~~~
 
-### Vitis example
+The difference of platform image is that it contains also Xen and more linux libraries, if nothing is selected smaller linux only image is being built, which is not at this moment compatible with the Vitis example (mostly name+path related)
 
-(This is under work, the public files are little behind of my local copy, see TODO section)
+### Vitis example
 
 The example script will compile one of the AMD examples using HLS, RTL and AIE kernels (https://github.com/Xilinx/Vitis-Tutorials/tree/2025.2/Vitis_System_Design/Design_Tutorials/01-Versal_Custom_Thin_Platform_Extensible_System) to this EDF Linux platform just as a proof of concept to verify platform functionality as extendable platform. The compilation will be via a very simple script which should be easy to replicate. 
 
@@ -40,6 +40,12 @@ Options:
   -clean                 Cleans build artifacts 
   -h, --help             Help text  
 ~~~
+
+Caveats:
+* The board files need to be copier under Vivado installation for linker to work, I might get this working by injecting tcl to the process, there are some hooks for that, not well documented, and not high priority. Tried to fix this already in many ways which did not work with v++ 
+* The test files go under / directory, wic+ext4 cannot copy to directories (possibly can be fixed with debugfs script)
+* Some libraries missing, so acceleration not tested, debugging this now
+
 
 ## Cloning & updates
 
@@ -105,8 +111,10 @@ Build with Ubuntu 24.04 will fail unless apparmor protection is changed, just ex
    * Add AI engine (done)
    * Link design (done)
    * Cross compiled Linux executables (done)
-   * Package
-   * HW-test
+   * Package (done, does not fully work for EDF flow)
+   * Create dtb manually for the linked image (done)
+   * Manually create image based on EDF EFI image (done)
+   * HW-test (started, does not work but boots :))
    * Cleanup the script (started)
 * Cleanup of Vivado build, probably not that complex Makefile magic is needed
 * Versal-AI port (this is not trivial as 6.2 still relies on Petalinux and memory controller setup for this is very tricky)
