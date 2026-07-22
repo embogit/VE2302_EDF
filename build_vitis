@@ -21,6 +21,14 @@ main ()
     cd $ROOTDIR
     mkdir -p vitis/build/xo_hw/
     mkdir -p vitis/build/linux/
+    mkdir -p vitis/build/boot
+    
+    #Copy boot elements to one directory for bif generation to work in Vitis
+    cp build/tmp/deploy/images/versal-generic-xcve2302/boot.bin-extracted/* vitis/build/boot
+    cp vitis/build/boot/arm-trusted-firmware.elf vitis/build/boot/bl31.elf
+
+    cp build/tmp/deploy/images/versal-generic-xcve2302/Image vitis/build/boot
+    cp build/tmp/deploy/images/versal-generic-xcve2302/boot.scr vitis/build/boot
 
     #Populate SDK
     if [ ! -d $ROOTDIR/vitis/build/sdk ]; then
@@ -119,6 +127,15 @@ main ()
         echo "Skipping linking"
     fi
 
+    #Build xpfm platform for linked design to get new DTB, this is a hack
+    cd $ROOTDIR
+    if [ ! -d vitis/build/workspace/versal-generic-xcve2302_platform_linked/ ]; then 
+        cd vitis/xpfm_creation/
+        vitis -s build_platform2.py --rootdir=$ROOTDIR
+        cd $ROOTDIR
+    fi
+
+    
     #Build Linux apps
     make all -C $ROOTDIR/vitis/linux/aie_dly_test
     make all -C $ROOTDIR/vitis/linux/vadd_s
@@ -126,18 +143,17 @@ main ()
     #Package eveything
     mkdir -p vitis/build/sdcard/
 
-#                --package.dtb=${ROOTDIR}/vitis/build/workspace/versal-generic-xcve2302_platform/export/versal-generic-xcve2302_platform/sw/boot/system.dtb \
-#                --package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-linux-disk-image-versal-generic-xcve2302.rootfs.ext4 \
 
    v++ --package --debug --save-temps \
 		--target hw \
-                --platform ${XPFM} \
+               --platform ${XPFM} \
 		--package.out_dir vitis/build/sdcard/ \
 		--package.boot_mode=sd \
                 --package.generate_sdcard \
 		--package.image_format=ext4 \
-		--package.kernel_image=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/Image \
-    		--package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.ext4  \
+		--package.kernel_image=${ROOTDIR}/build/tmp/deploy/images/versalgeneric-xcve2302/Image \
+    		--package.rootfs=${ROOTDIR}/build/tmp/deploy/images/versal-generc-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.ext4  \
+                --package.dtb=${ROOTDIR}/vitis/build/workspace/versal-generic-xce2302_platform/export/versal-generic-xcve2302_platform/sw/boot/system.dtb \
 		vitis/build/xo_hw/libadf.a \
 		vitis/build/platform/versal-generic-xcve2302_linked.xsa \
 		--package.sd_file=vitis/build/linux/aie_dly_test \
@@ -146,6 +162,14 @@ main ()
 		--temp_dir vitis/build/sdcard/work \
 		--report_dir vitis/build/sdcard/report \
        |& tee build/vpp_pack.log 
+
+   #Now build the image components and add them to original wic, the sd-card build is not usable as packager does not
+   #understand EFI or 3 partition boot used byu 2026.1 EDF
+
+   #Call bootgen with original .bif with added elemts from packager bif, check this manually
+
+   #Copy Image and boot.bin to original wic
+   
 }
 
 compile_hls ()
@@ -185,7 +209,8 @@ $(basename $0) -platform -sstate /storage/sstate
                 rm -rf vitis/build/workspace/*
                 rm -rf vitis/build/xo_hw/*
                 rm -rf vitis/build/platform/*
-                rm -rf vitis/build/linux/*
+                rm -rf vitis/build/sdcard/*
+                rm -rf vitis/build/boot/*
                 rm -rf vitis/build/sdk
                 find vitis -name xcd.log -print0 | xargs -0 rm -f
                 exit 0
