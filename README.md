@@ -98,8 +98,13 @@ else:
 I do part of the development at home machine without Vivado, so I might break sometimes things. I'll try to fix them ASAP :) And this is not official Avnet/Tria tree, altough I work as dedicated AMD FAE at Avnet. I just hope this helps people with VE2302 board/SOM or just porting their own custom board to EDF. At least I have learned a lot while doing this. If this really becomes more popular I promise to do changes in branches, test compile, use tags for releases etc. And I'm morer than happy to accept improvements...
 
 ### Building with Ubuntu 24.04
+2026.1 EDF:
 
 Build with Ubuntu 24.04 will fail unless apparmor protection is changed, just execute `sudo apparmor_parser -R /etc/apparmor.d/unprivileged_userns` 
+
+2025.2 EDF:
+
+See the topic above and also tar needs to be downgraded to 1.34 version.
 
 ### Todo
 
