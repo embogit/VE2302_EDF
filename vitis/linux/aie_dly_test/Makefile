@@ -22,7 +22,7 @@ GCC_INCLUDES     := -I${SYSROOT}/usr/include \
                     -I${ROOTDIR}/vitis/ip/aie/src \
                     -I${ROOTDIR}/vitis/ip/aie/
 
-GCC_C_FLAGS      := -O -Wall -std=c++17 -DXAIE_DEBUG \
+GCC_C_FLAGS      := -O -Wall -Wno-unknown-pragmas -std=c++17 -DXAIE_DEBUG \
                     -pthread \
                     --sysroot=${SYSROOT}
 
