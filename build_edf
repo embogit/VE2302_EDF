@@ -36,21 +36,15 @@ main ()
 
     repo init -u https://github.com/Xilinx/yocto-manifests.git -b rel-v$VIVADO -m default-edf.xml
 
-    #Select correct HW platform
+    #Select correct HW platform, for 2026.1 always platform as it is superset
     if [[ $VIVADO == "2025.2" ]]; then
         if [[ $PLATFORM == 0 ]]; then
             HW_PROJECT=ve2302_oob_2025_2
         else
-            echo "Platform creation currently not supported for 2025.2"
-            exit 1
+            HW_PROJECT=ve2302_platform_2025_2
         fi
     elif [[ $VIVADO == "2026.1" ]]; then
-        if [[ $PLATFORM == 0 ]]; then
-            HW_PROJECT=ve2302_oob_2026_1
-        else
             HW_PROJECT=ve2302_platform_2026_1
-        fi
-        
     else
         echo "Unsupported Vivado version $VIVADO"
         exit 1
@@ -83,7 +77,7 @@ main ()
     fi
 
     sources/meta-xilinx/gen-machine-conf/gen-machine-conf parse-sdt --template ve2302.yaml --hw-description $SDT_LOCATION -c build/conf -l build/conf/local.conf --machine-name versal-generic-xcve2302 --multiconfigfull
-
+    
     #Add local packages to build keeping compatibility with petalinux also
     if ! grep -q peekpoke "build/conf/local.conf"; then
         grep CON sources/meta-user/conf/user-rootfsconfig | sed 'sxCONFIG_\(.*\)xIMAGE_INSTALL:append = " \1"x' >> build/conf/local.conf
@@ -271,6 +265,8 @@ clean_sw ()
     rm -rf sources/meta-openamp
     rm -rf sources/meta-security
     rm -rf sources/meta-xilinx
+    rm -rf sources/meta-system-controller
+    rm -rf sources/meta-rauc
 }
 
 
