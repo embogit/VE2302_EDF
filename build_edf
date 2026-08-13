@@ -93,7 +93,10 @@ main ()
 	echo "IMAGE_INSTALL:append = \" ai-engine-driver\""  >> build/conf/local.conf
 	echo "IMAGE_INSTALL:append = \" ai-engine-driver-dev\""  >> build/conf/local.conf
 	echo "IMAGE_INSTALL:append = \" sysfsutils-dev\""  >> build/conf/local.conf
-        
+
+        #Make selfhosted to make debugging easier
+        echo "IMAGE_INSTALL:append = \" packagegroup-self-hosted\""  >> build/conf/local.conf
+
         #Remove warning on unsupported machine
         echo "AMD-EDF_IMAGE_SUPPORTED_MACHINES:append = \" versal-generic-xcve2302\"" >> build/conf/local.conf
 
