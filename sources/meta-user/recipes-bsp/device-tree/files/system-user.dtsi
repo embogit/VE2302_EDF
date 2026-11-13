@@ -1,5 +1,3 @@
-#include "recipe-sysroot/usr/share/sdt/versal-generic-xcve2302/include/dt-bindings/gpio/gpio.h"
-
 / {
 	model = "VE2302 board";
 	compatible = "xlnx,versal";
@@ -65,7 +63,7 @@
 		spi-rx-bus-width = <8>;
 		spi-max-frequency = <20000000>;
 		no-wp;
-		reset-gpios = <&gpio1 12 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&gpio1 12 1>;
 		partition@0 {
 			label = "spi0-boot";
 			reg = <0x00000000 0x01000000>;

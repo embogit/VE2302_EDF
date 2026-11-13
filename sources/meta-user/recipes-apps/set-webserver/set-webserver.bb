@@ -21,9 +21,9 @@ SYSTEMD_SERVICE:${PN} = "set-webserver.service"
 
 do_install() {
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/set-webserver.sh ${D}${bindir}/
+    install -m 0755 ${UNPACKDIR}/set-webserver.sh ${D}${bindir}/
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/set-webserver.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/set-webserver.service ${D}${systemd_system_unitdir}
 }
 
 FILES:${PN} += "${bindir}/set-webserver.sh"
