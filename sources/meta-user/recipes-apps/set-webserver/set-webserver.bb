@@ -11,7 +11,7 @@ SRC_URI = "file://set-webserver.sh \
            file://set-webserver.service \
 	"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 inherit systemd

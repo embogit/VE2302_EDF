@@ -10,7 +10,7 @@ SOURCE_MIRROR=/storage/downloads
 #Internal globals
 INSECURE_MODE=0
 PLATFORM=0
-VIVADO=2025.2
+VIVADO=2026.1
 
 main ()
 {
@@ -29,6 +29,8 @@ main ()
         VIVADO="2025.2"
     elif [[ $LOPPER == *"2026.1"* ]]; then
         VIVADO="2026.1"
+    elif [[ $LOPPER == *"2026.2"* ]]; then
+        VIVADO="2026.2"
     else
         echo "Unknown Vivado version (lopper not found from Vivado path)"
         exit 1
@@ -45,6 +47,8 @@ main ()
         fi
     elif [[ $VIVADO == "2026.1" ]]; then
             HW_PROJECT=ve2302_platform_2026_1
+    elif [[ $VIVADO == "2026.2" ]]; then
+            HW_PROJECT=ve2302_platform_2026_2
     else
         echo "Unsupported Vivado version $VIVADO"
         exit 1
@@ -270,6 +274,13 @@ clean_sw ()
     rm -rf sources/meta-xilinx
     rm -rf sources/meta-system-controller
     rm -rf sources/meta-rauc
+    rm -rf sources/manifest
+    rm -rf sources/meta-amd-hybrid
+    rm -rf sources/meta-dpdk
+    rm -rf sources/meta-petalinux
+    rm -rf sources/meta-qt6
+    rm -rf sources/meta-yocto
+    rm -rf sources/openembedded-core
 }
 
 

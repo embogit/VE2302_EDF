@@ -11,7 +11,7 @@ SRC_URI = "file://sysmon_fan_test.sh"
 
 FILES:${PN} += "${ROOT_HOME}"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_install() {
 	     install -d ${D}/root/

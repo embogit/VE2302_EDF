@@ -11,7 +11,7 @@ SRC_URI = "file://set-fan.sh \
            file://set-fan.service \
 	"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 inherit systemd
@@ -22,9 +22,9 @@ SYSTEMD_AUTO_ENABLE:${PN} = "enable"
 
 do_install() {
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/set-fan.sh ${D}${bindir}/
+    install -m 0755 ${UNPACKDIR}/set-fan.sh ${D}${bindir}/
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/set-fan.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/set-fan.service ${D}${systemd_system_unitdir}
 }
 
 FILES:${PN} += "${bindir}/set-fan.sh"

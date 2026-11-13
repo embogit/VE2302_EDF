@@ -15,7 +15,7 @@ SRC_URI += "file://FY26_1683_Tria_Versal_Dev_Kit_Product_Brief_vp-1.pdf"
 
 FILES:${PN} += "/srv/www"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_install() {
 	     install -d ${D}/srv/www
