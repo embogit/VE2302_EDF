@@ -281,6 +281,8 @@ clean_sw ()
     rm -rf sources/meta-qt6
     rm -rf sources/meta-yocto
     rm -rf sources/openembedded-core
+    rm -rf sources/meta-xilinx-tools
+    rm -rf sources/yocto-scripts
 }
 
 
