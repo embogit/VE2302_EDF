@@ -124,6 +124,14 @@ main ()
 
     cd build
 
+    #Add wic to sysroot, this is new requirement in EDF 2026.2/wrynoose
+    if [[ $VIVADO == "2026.2" ]]; then
+        bitbake wic-native -c addto_recipe_sysroot
+        WIC="oe-run-native wic-native wic"
+    else
+        WIC="wic"
+    fi
+
     bitbake-layers add-layer ../sources/meta-user
 
     #Configure caches to speed up build
@@ -144,15 +152,15 @@ main ()
     if [[ $PLATFORM == 0 ]]; then
         MACHINE=versal-generic-xcve2302 bitbake edf-linux-disk-image
         MACHINE=amd-cortexa72-common bitbake meta-edf-app-sdk
-        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-linux-disk-image-versal-generic-xcve2302.rootfs.wic:1
+        $WIC cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-linux-disk-image-versal-generic-xcve2302.rootfs.wic:1
         echo "WIC image ready, copy it to sd-card with command:"
         echo "sudo dd if=tmp/deploy/images/amd-cortexa72-common/edf-linux-disk-image-versal-generic-xcve2302.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
     else
  
         MACHINE=versal-generic-xcve2302 bitbake edf-platform-disk-image
         MACHINE=amd-cortexa72-common bitbake meta-edf-app-sdk
-        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic:1
-        wic cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic.qemu-sd:1
+        $WIC cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic:1
+        $WIC cp tmp/deploy/images/versal-generic-xcve2302/boot.bin tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic.qemu-sd:1
         
         echo "WIC image ready, copy it to sd-card with command:"
         echo "sudo dd if=tmp/deploy/images/versal-generic-xcve2302/edf-platform-disk-image-versal-generic-xcve2302.rootfs.wic of=/dev/<your sd card> bs=1M status=progress oflag=sync"
