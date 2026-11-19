@@ -5,14 +5,31 @@
 DEVICE="xcve2302-sfva784-1LP-e-S"
 
 ROOTDIR=$PWD
+export ROOTDIR
+
 XPFM=$ROOTDIR/vitis/build/workspace/versal-generic-xcve2302_platform/export/versal-generic-xcve2302_platform/versal-generic-xcve2302_platform.xpfm
 XODIR=$ROOTDIR/vitis/build/xo_hw/
 
-export ROOTDIR
 
 main ()
 {
 
+    #Get vivado version, and bail out for unsupported versions
+    LOPPER=$(which lopper)
+    if [[ $LOPPER == *"2025.2"* ]]; then
+        VIVADO="2025.2"
+        echo "For Vitis flow only 2026.1 is tested currently"
+        exit 1
+    elif [[ $LOPPER == *"2026.1"* ]]; then
+        VIVADO="2026.1"
+    elif [[ $LOPPER == *"2026.2"* ]]; then
+        VIVADO="2026.2"
+    else
+        echo "Unknown Vivado version (lopper not found from Vivado path)"
+        exit 1
+    fi
+
+    
     parse_cmd "$@"
     
     set $ROOTDIR/build

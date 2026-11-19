@@ -11,6 +11,7 @@ SOURCE_MIRROR=/storage/downloads
 INSECURE_MODE=0
 PLATFORM=0
 VIVADO=2026.1
+SPDX=0
 
 main ()
 {
@@ -106,6 +107,19 @@ main ()
 
         #Add ext4 rootimage for v++ packager
         echo "IMAGE_FSTYPES:append = \" ext4\""  >> build/conf/local.conf
+
+        #Limit the parallelism
+        if [ "$THREADS" != "" ]; then
+            echo "BB_NUMBER_THREADS = \" $THREADS\""  >> build/conf/local.conf
+            echo "BB_NUMBER_PARSE_THREADS = \" $THREADS\""  >> build/conf/local.conf
+        fi
+
+        if [[ $SPDX == 0 ]]; then
+            #SPDX creation is very heavy
+            echo "INHERIT:remove = \"create-spdx\""  >> build/conf/local.conf
+        fi
+        
+
     fi
 
     cd build
@@ -122,7 +136,7 @@ main ()
 
     #Enable usage of generic EDF linux image for Versal by specifying it from commandline separately
     sed -i '/MACHINE = \"versal-generic-xcve2302\"/d' conf/local.conf
-    
+
     #Create boot parts of image (single stage boot)
     MACHINE=versal-generic-xcve2302 bitbake xilinx-bootbin
 
@@ -155,13 +169,15 @@ parse_cmd ()
 Usage: $(basename $0) [OPTIONS]
 
 Options:
-  -insecure              Insecure download mode not checking certificates
   -platform              Build full platform imagage and SDK
-  -sstate <value>        Override SSTATE_CACHE location
-  -mirror <value>        Override SOURCE_MIRROR location
+  -threads <value>       Amount of threads to use
+  -spdx                  Create spdx, spdx creation uses a lot of memory
   -clean                 Cleans HW + SW build results
   -clean_hw              Cleans HW build
   -clean_sw              Cleans SW build
+  -sstate <value>        Override SSTATE_CACHE location
+  -mirror <value>        Override SOURCE_MIRROR location
+  -insecure              Insecure download mode not checking certificates
   -h, --help             Help text
 
 Example:
@@ -174,8 +190,17 @@ $(basename $0) -platform -sstate /storage/sstate
                 INSECURE_MODE=1
                 shift
                 ;;
+            -spdx)
+                SPDX=1
+                shift
+                ;;
             -platform)
                 PLATFORM=1
+                shift
+                ;;
+            -threads)
+                THREADS=$2
+                shift
                 shift
                 ;;
             -sstate)
