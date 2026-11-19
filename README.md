@@ -12,13 +12,15 @@ Usage: build_edf [OPTIONS]
   
 Options:  
 ~~~
-  -insecure              Insecure download mode not checking certificates  
   -platform              Build full platform imagage
+  -threads <value>       Amount of threads to use
+  -spdx                  Create spdx, spdx creation uses a lot of memory
   -sstate <value>        Override SSTATE_CACHE location  
   -mirror <value>        Override SOURCE_MIRROR location  
   -clean                 Cleans HW + SW build artifacts  
   -clean_hw              Cleans only HW build  
   -clean_sw              Cleans only SW build  
+  -insecure              Insecure download mode not checking certificates  
   -h, --help             This help text  
 ~~~
   
