@@ -51,7 +51,15 @@ main ()
     
     #Copy boot elements to one directory for bif generation to work in Vitis
     cp build/tmp/deploy/images/versal-generic-xcve2302/boot.bin-extracted/* vitis/build/boot
-    cp vitis/build/boot/arm-trusted-firmware.elf vitis/build/boot/bl31.elf
+
+    #2026.1 and 2026.2 have little different naming conventions. Probably there is better fix..
+    if [[ $VIVADO == "2026.2" ]]; then
+        cp vitis/build/boot/bl31.elf vitis/build/boot/arm-trusted-firmware.elf 
+        cp build/tmp/deploy/images/versal-generic-xcve2302/bootbin-version.txt vitis/build/boot/bootbin-version-string-versal-generic-xcve2302.txt
+        touch vitis/build/boot/bootbin-rollback-counter-versal-generic-xcve2302.bin
+    else
+        cp vitis/build/boot/arm-trusted-firmware.elf vitis/build/boot/bl31.elf
+    fi
 
     cp build/tmp/deploy/images/versal-generic-xcve2302/Image vitis/build/boot
     cp build/tmp/deploy/images/versal-generic-xcve2302/boot.scr vitis/build/boot
