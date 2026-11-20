@@ -8,10 +8,13 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument("--rootdir", type=str, dest="rootdir",  
                     help="root path for this whole project")
+parser.add_argument("--version", type=str, dest="vivadoversion",  
+                    help="Tool version")
 
 args = parser.parse_args()
 
 rootdir=args.rootdir
+vivadoversion=args.vivadoversion
 
 print("Rootdir: ",rootdir)
 
@@ -21,7 +24,7 @@ client.set_workspace(path=rootdir + "/vitis/build/workspace/")
 
 advanced_options = client.create_advanced_options_dict(user_dtsi=rootdir + "/sources/meta-user/recipes-bsp/device-tree/files/system-user-vitis.dtsi",dt_overlay="0",dt_zocl="1")
 
-platform = client.create_platform_component(name = "versal-generic-xcve2302_platform",hw_design = rootdir + "/vivado-hw/vitis_ve2302_platform_2026_1.xsa",os = "linux",cpu = "psv_cortexa72",domain_name = "linux_psv_cortexa72",generate_dtb = True,advanced_options = advanced_options)
+platform = client.create_platform_component(name = "versal-generic-xcve2302_platform",hw_design = rootdir + "/vivado-hw/vitis_ve2302_platform_" + vivadoversion + ".xsa",os = "linux",cpu = "psv_cortexa72",domain_name = "linux_psv_cortexa72",generate_dtb = True,advanced_options = advanced_options)
 
 platform = client.get_component(name="versal-generic-xcve2302_platform")
 domain = platform.get_domain(name="linux_psv_cortexa72")

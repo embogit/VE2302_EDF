@@ -35,6 +35,15 @@ main ()
     set $ROOTDIR/build
     source edf-init-build-env
 
+    #WIC is different in 2026.2
+    if [[ $VIVADO == "2026.2" ]]; then
+        WIC="oe-run-native wic-native wic"
+    else
+        WIC="wic"
+    fi
+
+
+    
     cd $ROOTDIR
     mkdir -p vitis/build/xo_hw/
     mkdir -p vitis/build/linux/
@@ -58,7 +67,12 @@ main ()
     #Build xpfm platform
     if [ ! -d vitis/build/workspace/versal-generic-xcve2302_platform/ ]; then 
         cd vitis/xpfm_creation/
-        vitis -s build_platform.py --rootdir=$ROOTDIR
+        if [[ $VIVADO == "2026.1" ]]; then
+            vitis -s build_platform.py --rootdir=$ROOTDIR --version=2026_1
+        elif [[ $VIVADO == "2026.2" ]]; then
+            vitis -s build_platform.py --rootdir=$ROOTDIR --version=2026_2
+        fi
+        
     fi
     
     #Build IP
@@ -189,10 +203,10 @@ main ()
    bootgen -w -arch versal -image ${ROOTDIR}/vitis/boot_linked_design.bif -o ${ROOTDIR}/vitis/build/boot/boot.bin
 
    #Copy Linux files and boot.bin to original wic
-   wic cp vitis/build/linux/aie_dly_test vitis/build/sdcard/platform_image.wic:3/root
-   wic cp vitis/build/linux/vadd_s vitis/build/sdcard/platform_image.wic:3/root
-   wic cp vitis/build/sdcard/platform.xclbin vitis/build/sdcard/platform_image.wic:3/root
-   wic cp vitis/build/boot/boot.bin vitis/build/sdcard/platform_image.wic:1/
+   $WIC cp vitis/build/linux/aie_dly_test vitis/build/sdcard/platform_image.wic:3/root
+   $WIC cp vitis/build/linux/vadd_s vitis/build/sdcard/platform_image.wic:3/root
+   $WIC cp vitis/build/sdcard/platform.xclbin vitis/build/sdcard/platform_image.wic:3/root
+   $WIC cp vitis/build/boot/boot.bin vitis/build/sdcard/platform_image.wic:1/
    
 }
 
